@@ -7,7 +7,7 @@ The app should seed mock data on server start:
 - Enough subscriptions to exercise `Load more` behavior beyond the first 5 newest rows.
 - A mix of active, duration-paused, indefinitely paused, and canceled subscriptions.
 - Recent transactions so the transaction feed is not empty on first page load.
-- Billing intervals spread across `500` to `2000` ms so events are visibly staggered.
+- Billing intervals in seeded demo data currently spread across `1500` to `3000` ms so live activity is still visible without becoming noisy.
 
 Seeded startup records should initialize in-memory state directly. They should not emit synthetic domain events into the SSE replay buffer.
 
@@ -20,7 +20,7 @@ Expected fields:
 - `amountCents`: Billing amount in cents.
 - `currency`: ISO currency code.
 - `status`: `active`, `paused`, or `canceled`.
-- `billingIntervalMs`: Demo billing interval in milliseconds. Expected range is `500` to `2000`.
+- `billingIntervalMs`: Demo billing interval in milliseconds. Expected range is `500` to `10000`.
 - `nextBillingAt`: Date/time when the subscription is next scheduled to bill.
 - `pausedAt`: Date/time when the current pause started. Use `null` when not paused.
 - `pauseUntil`: Date/time when a timed pause should end. Use `null` for not paused or indefinitely paused.

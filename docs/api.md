@@ -180,7 +180,7 @@ Example SSE payload:
 ```text
 id: 184
 event: subscription.paused
-data: {"subscription":{"id":"sub_001","planName":"Starter","amountCents":1299,"currency":"USD","status":"paused","billingIntervalMs":1000,"nextBillingAt":"2026-07-01T12:00:10.000Z","pausedAt":"2026-07-01T12:00:00.000Z","pauseUntil":"2026-07-01T12:00:05.000Z","canceledAt":null,"createdAt":"2026-07-01T11:59:00.000Z","updatedAt":"2026-07-01T12:00:00.000Z"}}
+data: {"subscription":{"id":"sub_001","planName":"Starter","amountCents":1299,"currency":"USD","status":"paused","billingIntervalMs":2000,"nextBillingAt":"2026-07-01T12:00:10.000Z","pausedAt":"2026-07-01T12:00:00.000Z","pauseUntil":"2026-07-01T12:00:05.000Z","canceledAt":null,"createdAt":"2026-07-01T11:59:00.000Z","updatedAt":"2026-07-01T12:00:00.000Z"}}
 ```
 
 Example transaction event payload:
@@ -219,7 +219,7 @@ Create request body:
   "planName": "Starter",
   "amountCents": 1299,
   "currency": "USD",
-  "billingIntervalMs": 1000
+  "billingIntervalMs": 2000
 }
 ```
 
@@ -227,7 +227,7 @@ Creation rules:
 
 - `planName` should be a non-empty string.
 - `amountCents` should be a positive integer.
-- `billingIntervalMs` should stay within the demo range of `500` to `2000`.
+- `billingIntervalMs` should stay within the demo range of `500` to `10000`.
 - New subscriptions should start as `active`.
 - Creation should perform one immediate successful charge.
 - After that initial charge, `nextBillingAt` should be advanced to the first future slot on the fixed billing grid anchored to the creation time.
@@ -293,7 +293,7 @@ Suggested error shape:
       "amountCents": 1299,
       "currency": "USD",
       "status": "paused",
-      "billingIntervalMs": 1000,
+      "billingIntervalMs": 2000,
       "nextBillingAt": "2026-07-01T12:00:10.000Z",
       "pausedAt": "2026-07-01T12:00:00.000Z",
       "pauseUntil": "2026-07-01T12:00:05.000Z",

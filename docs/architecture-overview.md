@@ -68,6 +68,13 @@ Why this split fits the app:
 - it avoids a client bootstrap waterfall
 - it reduces the race window between initial data and SSE replay
 - it keeps the interactive state machine in one client boundary
+- it lets the initial SSR bootstrap respect URL state such as `?status=active` before the client takes over
+
+The server page should derive the initial subscription filter from the URL query string. In version one that means:
+
+- no `status` query parameter => bootstrap the all-subscriptions view
+- `status=active` => bootstrap the active-only view
+- any other `status` value => fall back to the all-subscriptions view
 
 The client dashboard component should own:
 
@@ -126,6 +133,16 @@ Examples:
 - visible billing state labels
 - remaining timed pause duration
 - whether a row should render pause or resume actions
+
+## Module Layout
+
+Keep the codebase split by runtime ownership:
+
+- `src/app/`: Next App Router entrypoints, including `src/app/page.tsx` and the HTTP route handlers under `src/app/api/`
+- `src/features/dashboard/`: dashboard-specific client code such as components, hooks, reducer/state, virtualization, and URL state handling
+- `src/server/subscriptions/`: server-only billing runtime, in-memory store, GraphQL execution, SSE, cursor helpers, and seed data
+- `src/shared/subscriptions/`: cross-boundary contract code that is safe to share between client and server, such as types, constants, GraphQL documents, and input rules
+- `public/`: static assets used by the UI
 
 ## Cleanup Target
 

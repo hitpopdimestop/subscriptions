@@ -13,7 +13,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-[color:var(--background)] text-slate-950 antialiased">
+        {children}
+      </body>
     </html>
   );
 }

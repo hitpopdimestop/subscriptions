@@ -7,6 +7,7 @@ Expected UI:
 - Subscription list.
 - Show 5 newest subscriptions by default with a `Load more` button for the next cursor slice.
 - Filter for all subscriptions or active subscriptions only.
+- The active-only view should be deep-linkable via `?status=active`. Omitting `status` should mean the all-subscriptions view.
 - Visible derived billing state for active, paused, and canceled subscriptions.
 - Remaining timed pause duration should be derived in the UI from `pauseUntil - now`; it should not be stored separately.
 - Actions for pause indefinitely, pause for 1 second, pause for 2 seconds, pause for 5 seconds, pause for a custom number of seconds, resume, and cancel.
@@ -23,6 +24,11 @@ Expected UI:
 ## List Filtering and Staleness
 
 - Subscription filters are server-side fetch filters only.
+- The current filter should round-trip through the page URL so reloads and shared links preserve the same view.
+- Supported URL behavior in version one:
+  - no `status` query parameter means all subscriptions
+  - `status=active` means the active-only filter
+  - any other `status` value should fall back to all subscriptions
 - The visible client list should not be locally re-filtered after SSE updates.
 - If an item is visible in the current list and later changes from `active` to `paused` or `canceled`, it should stay visible until the user refreshes the list.
 - `subscription.created` received over SSE should mark the current subscription list as stale only when that subscription id is not already present in the currently loaded frontend list.

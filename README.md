@@ -15,6 +15,16 @@ Demo fullstack Next.js app for observing subscription billing behavior with in-m
 - `docs/testing-strategy.md` for TDD order, test seams, and required backend/frontend/e2e coverage.
 - `AGENTS.md` for agent-specific guidance.
 
+## App Structure
+
+- `src/app/` for the Next App Router entrypoints: the SSR dashboard page, layout, globals, and API routes.
+- `src/features/dashboard/` for the dashboard frontend feature: components, hooks, reducer/state, URL filter state, formatting, and client-side tests.
+- `src/server/subscriptions/` for the server-only billing runtime and adapters: in-memory store, GraphQL execution, SSE, cursors, HTTP helpers, and seed data.
+- `src/shared/subscriptions/` for cross-boundary contract code shared by client and server: DTO types, GraphQL documents, constants, and input rules.
+- `public/` for static assets such as the demo user avatar.
+
+See `docs/architecture-overview.md` for the rendering split and ownership boundaries between these areas.
+
 ## Development
 
 Run the app with:
@@ -24,3 +34,5 @@ yarn dev
 ```
 
 Then open `http://localhost:3000`.
+
+Use `http://localhost:3000?status=active` to open the active-only subscription view directly.
