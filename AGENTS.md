@@ -26,5 +26,3 @@ Read these before making product or architecture decisions:
   go here for scheduler behavior, billing-loop rules, and implementation-level billing timing details.
 - `@docs/testing-strategy.md`:
   go here for TDD order, backend-first implementation flow, required test seams, and must-have unit/integration/e2e scenarios.
-- `@docs/demo-recording-script.md`:
-  go here for the recommended screen-recording walkthrough that shows the most demo functionality in one pass.
