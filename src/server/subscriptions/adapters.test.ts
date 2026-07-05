@@ -307,6 +307,26 @@ describe("transport adapters", () => {
     expect(json.error.subscription.id).toBe(created.value.id);
   });
 
+  it("maps GraphQL read errors to the documented error envelope", async () => {
+    const nowMs = Date.UTC(2026, 6, 2, 12, 0, 0, 0);
+    const testRuntime = createTestRuntime(createSeedState(nowMs), nowMs);
+    replaceStoreSingletonForTesting(testRuntime.runtime);
+
+    const response = await graphQLPost(
+      await postJson("/api/graphql", {
+        query: SUBSCRIPTION_SLICE_QUERY,
+        variables: {
+          cursor: "not-a-valid-cursor",
+        },
+      }),
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(json.error.code).toBe("INVALID_CURSOR");
+    expect(json.error.message).toBe("Cursor is invalid.");
+  });
+
   it("replays buffered events from sinceEventId", async () => {
     const testRuntime = createTestRuntime();
     replaceStoreSingletonForTesting(testRuntime.runtime);

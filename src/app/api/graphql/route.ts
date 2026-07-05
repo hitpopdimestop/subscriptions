@@ -1,4 +1,5 @@
 import { executeSubscriptionsGraphQL } from "../../../server/subscriptions/graphql";
+import { isStoreError } from "../../../server/subscriptions/errors";
 import {
   HttpError,
   jsonResponse,
@@ -23,7 +24,22 @@ export async function POST(request: Request) {
     }
 
     const result = await executeSubscriptionsGraphQL(body.query, body.variables);
-    return jsonResponse(result, result.errors ? 400 : 200);
+
+    if (result.errors?.length) {
+      const originalError = result.errors[0]?.originalError;
+
+      if (isStoreError(originalError) || originalError instanceof HttpError) {
+        return toErrorResponse(originalError);
+      }
+
+      throw new HttpError(
+        "INVALID_GRAPHQL_QUERY",
+        400,
+        result.errors.map((error) => error.message).join(", "),
+      );
+    }
+
+    return jsonResponse(result, 200);
   } catch (error) {
     return toErrorResponse(error);
   }

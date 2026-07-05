@@ -13,6 +13,7 @@ import {
   encodeTransactionCursor,
 } from "./cursors";
 import { StoreError } from "./errors";
+import type { StoreErrorCode } from "./errors";
 import {
   isBillingIntervalInRange,
   isPositiveInteger,
@@ -53,6 +54,21 @@ interface StoreCoreOptions {
   replayConfig?: Partial<ReplayConfig>;
 }
 
+interface ReplayResolutionAttempt {
+  ok: true;
+  value: ReplayResolution;
+}
+
+interface ReplayResolutionFailure {
+  ok: false;
+  error: {
+    code: StoreErrorCode;
+    status: number;
+    message: string;
+    subscription?: Subscription;
+  };
+}
+
 export interface StoreCore {
   getCurrentEventId(): string;
   getDashboardBootstrap(options?: DashboardBootstrapOptions): DashboardBootstrap;
@@ -64,6 +80,9 @@ export interface StoreCore {
   cancelSubscription(id: string): MutationResult<Subscription>;
   stepBilling(nowMs: number): BillingStepResult;
   resolveReplaySince(eventId?: string | null): ReplayResolution;
+  tryResolveReplaySince(
+    eventId?: string | null,
+  ): ReplayResolutionAttempt | ReplayResolutionFailure;
 }
 
 function toIsoString(valueMs: number | null): string | null {
@@ -163,14 +182,6 @@ function advanceToFirstFutureSlot(
   }
 
   return nextBillingAtMs;
-}
-
-function parseEventId(value: string): number {
-  if (!/^\d+$/.test(value)) {
-    throw new StoreError("INVALID_EVENT_ID", "Event id must be an unsigned integer.");
-  }
-
-  return Number(value);
 }
 
 export function createStoreCore(
@@ -427,6 +438,79 @@ export function createStoreCore(
     }
 
     return pauseSeconds;
+  }
+
+  function tryResolveReplaySinceInternal(
+    eventId?: string | null,
+  ): ReplayResolutionAttempt | ReplayResolutionFailure {
+    if (eventId === null || eventId === undefined || eventId === "") {
+      return {
+        ok: true,
+        value: { events: [] },
+      };
+    }
+
+    if (!/^\d+$/.test(eventId)) {
+      return {
+        ok: false,
+        error: {
+          code: "INVALID_EVENT_ID",
+          status: 409,
+          message: "Event id must be an unsigned integer.",
+        },
+      };
+    }
+
+    const requestedId = Number(eventId);
+
+    if (requestedId > lastEventId) {
+      return {
+        ok: false,
+        error: {
+          code: "INVALID_EVENT_ID",
+          status: 409,
+          message: "Requested event id is ahead of the current replay watermark.",
+        },
+      };
+    }
+
+    if (requestedId === lastEventId) {
+      return {
+        ok: true,
+        value: { events: [] },
+      };
+    }
+
+    if (replayBuffer.length === 0) {
+      return {
+        ok: false,
+        error: {
+          code: "REPLAY_EXPIRED",
+          status: 409,
+          message: "The requested replay window is no longer available.",
+        },
+      };
+    }
+
+    const firstRetainedId = replayBuffer[0].id;
+
+    if (requestedId < firstRetainedId - 1) {
+      return {
+        ok: false,
+        error: {
+          code: "REPLAY_EXPIRED",
+          status: 409,
+          message: "The requested replay window is no longer available.",
+        },
+      };
+    }
+
+    return {
+      ok: true,
+      value: {
+        events: replayBuffer.filter((event) => event.id > requestedId),
+      },
+    };
   }
 
   function buildSubscriptionSlice(
@@ -716,42 +800,21 @@ export function createStoreCore(
     },
 
     resolveReplaySince(eventId) {
-      if (eventId === null || eventId === undefined || eventId === "") {
-        return { events: [] };
-      }
+      const replayResolution = tryResolveReplaySinceInternal(eventId);
 
-      const requestedId = parseEventId(eventId);
-
-      if (requestedId > lastEventId) {
+      if (!replayResolution.ok) {
         throw new StoreError(
-          "INVALID_EVENT_ID",
-          "Requested event id is ahead of the current replay watermark.",
+          replayResolution.error.code,
+          replayResolution.error.message,
+          replayResolution.error.subscription,
         );
       }
 
-      if (requestedId === lastEventId) {
-        return { events: [] };
-      }
+      return replayResolution.value;
+    },
 
-      if (replayBuffer.length === 0) {
-        throw new StoreError(
-          "REPLAY_EXPIRED",
-          "The requested replay window is no longer available.",
-        );
-      }
-
-      const firstRetainedId = replayBuffer[0].id;
-
-      if (requestedId < firstRetainedId - 1) {
-        throw new StoreError(
-          "REPLAY_EXPIRED",
-          "The requested replay window is no longer available.",
-        );
-      }
-
-      return {
-        events: replayBuffer.filter((event) => event.id > requestedId),
-      };
+    tryResolveReplaySince(eventId) {
+      return tryResolveReplaySinceInternal(eventId);
     },
   };
 }

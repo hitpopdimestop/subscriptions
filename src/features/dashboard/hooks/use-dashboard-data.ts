@@ -89,6 +89,7 @@ export function useDashboardData({
   const stateRef = useRef(state);
   const loadingSubscriptionCursorRef = useRef<string | null>(null);
   const loadingTransactionCursorRef = useRef<string | null>(null);
+  const subscriptionListVersionRef = useRef(0);
 
   useEffect(() => {
     stateRef.current = state;
@@ -138,7 +139,14 @@ export function useDashboardData({
   });
 
   const refreshSubscriptions = useCallback(async (filter: SubscriptionFilterValue) => {
+    subscriptionListVersionRef.current += 1;
+    const requestVersion = subscriptionListVersionRef.current;
     const subscriptions = await fetchSubscriptionSlice(filter);
+
+    if (subscriptionListVersionRef.current !== requestVersion) {
+      return;
+    }
+
     dispatch({
       type: "subscriptions/replaced",
       filter,
@@ -174,6 +182,7 @@ export function useDashboardData({
 
   const handleLoadMoreSubscriptions = useCallback(async () => {
     const cursor = state.subscriptionNextCursor;
+    const listVersion = subscriptionListVersionRef.current;
 
     if (
       !cursor ||
@@ -188,6 +197,11 @@ export function useDashboardData({
 
     try {
       const subscriptions = await fetchSubscriptionSlice(state.filter, cursor);
+
+      if (subscriptionListVersionRef.current !== listVersion) {
+        return;
+      }
+
       dispatch({
         type: "subscriptions/appended",
         items: subscriptions.items,

@@ -281,4 +281,51 @@ describe("createStoreCore", () => {
     ]);
     expect(toMs(subscription?.nextBillingAt ?? null)).toBe(5000);
   });
+
+  it("returns replay resolution errors as data when the caller wants to handle them without throwing", () => {
+    const invalidFutureStore = createTestStore();
+    invalidFutureStore.core.createSubscription({
+      planName: "Starter",
+      amountCents: 1299,
+      currency: "USD",
+      billingIntervalMs: 2000,
+    });
+
+    const invalidFutureReplay = invalidFutureStore.core.tryResolveReplaySince("99");
+
+    expect(invalidFutureReplay.ok).toBe(false);
+    if (invalidFutureReplay.ok) {
+      throw new Error("Expected invalidFutureReplay to be an error result.");
+    }
+    expect(invalidFutureReplay.error.code).toBe("INVALID_EVENT_ID");
+
+    const replayExpiredCore = createStoreCore(
+      {
+        now: () => 0,
+        createSubscriptionId: createIdFactory("sub"),
+        createTransactionId: createIdFactory("txn"),
+      },
+      {
+        replayConfig: {
+          maxAgeMs: 60_000,
+          maxEvents: 1,
+        },
+      },
+    );
+
+    replayExpiredCore.createSubscription({
+      planName: "Starter",
+      amountCents: 1299,
+      currency: "USD",
+      billingIntervalMs: 2000,
+    });
+
+    const replayExpired = replayExpiredCore.tryResolveReplaySince("0");
+
+    expect(replayExpired.ok).toBe(false);
+    if (replayExpired.ok) {
+      throw new Error("Expected replayExpired to be an error result.");
+    }
+    expect(replayExpired.error.code).toBe("REPLAY_EXPIRED");
+  });
 });

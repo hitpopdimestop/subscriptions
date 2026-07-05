@@ -32,16 +32,30 @@ export function jsonResponse(body: unknown, status = 200): Response {
   return Response.json(body, { status });
 }
 
-function errorResponse(error: StoreError | HttpError): Response {
+export function jsonErrorResponse(
+  code: string,
+  status: number,
+  message: string,
+  subscription?: Subscription,
+): Response {
   const body: ErrorBody = {
     error: {
-      code: error.code,
-      message: error.message,
-      ...(error.subscription ? { subscription: error.subscription } : {}),
+      code,
+      message,
+      ...(subscription ? { subscription } : {}),
     },
   };
 
-  return jsonResponse(body, error.status);
+  return jsonResponse(body, status);
+}
+
+function errorResponse(error: StoreError | HttpError): Response {
+  return jsonErrorResponse(
+    error.code,
+    error.status,
+    error.message,
+    error.subscription,
+  );
 }
 
 export function toErrorResponse(error: unknown): Response {

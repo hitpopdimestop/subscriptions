@@ -1,5 +1,8 @@
 import { DEFAULT_SSE_KEEPALIVE_MS } from "../../../server/subscriptions/constants";
-import { toErrorResponse } from "../../../server/subscriptions/http";
+import {
+  jsonErrorResponse,
+  toErrorResponse,
+} from "../../../server/subscriptions/http";
 import { getStoreSingleton } from "../../../server/subscriptions/runtime";
 import { formatSseComment, formatSseEvent } from "../../../server/subscriptions/sse";
 
@@ -12,7 +15,20 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const lastEventId = request.headers.get("Last-Event-ID");
     const sinceEventId = url.searchParams.get("sinceEventId");
-    const replay = runtimeStore.core.resolveReplaySince(lastEventId ?? sinceEventId);
+    const replayResolution = runtimeStore.core.tryResolveReplaySince(
+      lastEventId ?? sinceEventId,
+    );
+
+    if (!replayResolution.ok) {
+      return jsonErrorResponse(
+        replayResolution.error.code,
+        replayResolution.error.status,
+        replayResolution.error.message,
+        replayResolution.error.subscription,
+      );
+    }
+
+    const replay = replayResolution.value;
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream<Uint8Array>({
