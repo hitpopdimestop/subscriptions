@@ -2,6 +2,10 @@
 
 Demo fullstack Next.js app for observing subscription billing behavior with in-memory data and SSE updates.
 
+**Live demo:** [subscriptions-dcwg.onrender.com](https://subscriptions-dcwg.onrender.com)
+
+> The demo runs on Render's free tier and sleeps after 15 minutes of inactivity — the first visit may take up to a minute to wake. The app requires a single long-lived Node.js process (see `docs/architecture-overview.md`), so it is not deployable to stateless serverless platforms.
+
 ## Documents
 
 - `docs/product-scope.md` for product scope and non-goals.
