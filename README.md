@@ -6,6 +6,20 @@ Demo fullstack Next.js app for observing subscription billing behavior with in-m
 
 > The demo runs on Render's free tier and sleeps after 15 minutes of inactivity — the first visit may take up to a minute to wake. The app requires a single long-lived Node.js process (see `docs/architecture-overview.md`), so it is not deployable to stateless serverless platforms.
 
+## How and why this was built
+
+This app is a test of one question: how far does spec-driven development get you with **no SDD tooling** — no Spec Kit, no Kiro, just plain-markdown specs and a router file driving an AI agent? Billing was the chosen domain because it's unforgiving enough to make the answer mean something.
+
+The process was spec-first, and the history proves it: every doc in `docs/` was committed *before* any product code. `a5f759d` adds the specs; `226b5f0` lands the implementation on top of them.
+
+Three choices let a plain-markdown process hold up under an agent:
+
+- **`AGENTS.md` routes, it doesn't dump.** It points the agent at the one document that governs each decision instead of every document at once — and opens with a guardrail against stale training data, since framework APIs drift faster than model weights.
+- **The specs pin down test seams, not just test cases** — an injectable clock, deterministic ids, a directly callable scheduler step (see `docs/testing-strategy.md`). Without them, deterministic tests around billing time and SSE replay aren't writable.
+- **The domain carries the proof.** Recurring billing on a fixed due-date grid, SSE replay, reconnect, and cross-tab sync are exactly the behaviors unit tests can't pin down — which is why the e2e layer exists, and why the test case wasn't a todo list.
+
+The human role was architecture, specification, and review; the agent wrote the code.
+
 ## Documents
 
 - `docs/product-scope.md` for product scope and non-goals.
