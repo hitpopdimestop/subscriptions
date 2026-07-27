@@ -16,8 +16,9 @@
 
   --content: light-dark(var(--color-slate-950), var(--color-slate-100));
   --content-muted: light-dark(var(--color-slate-500), var(--color-slate-400));
-  --content-subtle: light-dark(var(--color-slate-400), var(--color-slate-500));
+  --content-subtle: light-dark(var(--color-slate-500), var(--color-slate-400));
   --content-inverted: light-dark(var(--color-white), var(--color-slate-950));
+  --content-inverted-muted: light-dark(var(--color-slate-400), var(--color-slate-600));
 
   --border-subtle: light-dark(var(--color-slate-200), var(--color-slate-700));
   --border-strong: light-dark(var(--color-slate-400), var(--color-slate-600));
@@ -67,6 +68,7 @@
   --color-content-muted: var(--content-muted);
   --color-content-subtle: var(--content-subtle);
   --color-content-inverted: var(--content-inverted);
+  --color-content-inverted-muted: var(--content-inverted-muted);
 
   --color-border: var(--border-subtle);
   --color-border-strong: var(--border-strong);

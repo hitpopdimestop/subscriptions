@@ -112,7 +112,7 @@ export function PauseDialog({
                 <span className="block text-sm font-semibold">{label}</span>
                 <span
                   className={`mt-1 block text-xs ${
-                    selected ? "text-content-subtle" : "text-content-muted"
+                    selected ? "text-content-inverted-muted" : "text-content-muted"
                   }`}
                 >
                   {description}
@@ -136,7 +136,9 @@ export function PauseDialog({
               <span className="block text-sm font-semibold">Custom seconds</span>
               <span
                 className={`mt-1 block text-xs ${
-                  pausePreset === "custom" ? "text-content-subtle" : "text-content-muted"
+                  pausePreset === "custom"
+                    ? "text-content-inverted-muted"
+                    : "text-content-muted"
                 }`}
               >
                 Choose any positive number of seconds.

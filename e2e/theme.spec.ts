@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
+import { contrastRatio } from "./contrast";
 
 function bodyBackground(page: Page) {
   return page.evaluate(() => getComputedStyle(document.body).backgroundColor);
@@ -8,6 +9,36 @@ function colorScheme(page: Page) {
   return page.evaluate(
     () => getComputedStyle(document.documentElement).colorScheme,
   );
+}
+
+async function renderedColors(foreground: Locator, background: Locator) {
+  const backgroundElement = await background.elementHandle();
+
+  if (!backgroundElement) {
+    throw new Error("Expected a visible contrast background.");
+  }
+
+  return foreground.evaluate((element, backgroundNode) => {
+    const context = document.createElement("canvas").getContext("2d");
+
+    if (!context) {
+      throw new Error("Expected a canvas context for color normalization.");
+    }
+
+    const toRgb = (color: string) => {
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
+
+      return `rgb(${red}, ${green}, ${blue})`;
+    };
+
+    return {
+      backgroundColor: toRgb(getComputedStyle(backgroundNode).backgroundColor),
+      color: toRgb(getComputedStyle(element).color),
+    };
+  }, backgroundElement);
 }
 
 test("toggling the theme updates the document and persists across reload", async ({
@@ -82,6 +113,45 @@ test("an explicit preference overrides the operating system setting", async ({
   expect(await colorScheme(page)).toBe("light");
 
   await context.close();
+});
+
+test("semantic helper text meets AA contrast on normal and inverted surfaces in explicit themes", async ({
+  browser,
+}) => {
+  for (const preference of ["light", "dark"] as const) {
+    const context = await browser.newContext();
+    await context.addInitScript((value) => {
+      window.localStorage.setItem("subscriptions:theme", value);
+    }, preference);
+
+    const page = await context.newPage();
+    await page.goto("/");
+
+    const transactionHelper = page.getByText("End of history");
+    const transactionPanel = page
+      .locator("section")
+      .filter({ has: page.getByRole("heading", { name: "Transactions" }) });
+    const transactionColors = await renderedColors(transactionHelper, transactionPanel);
+
+    expect(
+      contrastRatio(transactionColors.color, transactionColors.backgroundColor),
+      `transaction helper contrast in explicit ${preference} mode`,
+    ).toBeGreaterThanOrEqual(4.5);
+
+    await page.getByRole("button", { name: "Pause Studio" }).click();
+    const selectedDescription = page.getByText("Resume quickly after a short pause.");
+    const selectedOption = page.getByRole("button", {
+      name: /1 second resume quickly after a short pause/i,
+    });
+    const selectedColors = await renderedColors(selectedDescription, selectedOption);
+
+    expect(
+      contrastRatio(selectedColors.color, selectedColors.backgroundColor),
+      `selected pause description contrast in explicit ${preference} mode`,
+    ).toBeGreaterThanOrEqual(4.5);
+
+    await context.close();
+  }
 });
 
 test("the page loads without console errors in every theme", async ({
