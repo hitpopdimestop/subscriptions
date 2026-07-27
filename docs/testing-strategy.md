@@ -90,6 +90,7 @@ Cover:
 - transaction highlighting
 - replay-expired UI state
 - offline toggle disconnect and reconnect behavior
+- theme preference parsing, including the fallback to `system` for missing or unparseable stored values
 
 ## End-to-End Coverage
 
@@ -103,6 +104,8 @@ Minimum useful scenarios:
 4. cancel in one tab propagates to another tab
 5. offline tab reconnects and replays missed events
 6. replay can no longer continue and the UI requires refresh
+7. a theme choice persists across reload and propagates to another tab
+8. the page loads with no console errors under each theme preference, since hydration mismatches surface only there and are invisible to assertions on the DOM
 
 ## Practical Guidance
 
