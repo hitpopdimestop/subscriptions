@@ -30,7 +30,7 @@ export function DashboardNotices({
           </div>
           <button
             type="button"
-            className="rounded-md bg-danger-solid px-3 py-2 text-sm font-medium text-content-inverted"
+            className="rounded-md bg-danger-solid px-3 py-2 text-sm font-medium text-danger-solid-content"
             onClick={onReloadPage}
           >
             Reload page

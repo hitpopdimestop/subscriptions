@@ -1,5 +1,34 @@
 import { expect, test, type Page } from "@playwright/test";
 
+function relativeLuminance(color: string) {
+  const channels = color.match(/\d+(?:\.\d+)?/g)?.map(Number);
+
+  if (!channels || channels.length < 3) {
+    throw new Error(`Expected an rgb color, received ${color}`);
+  }
+
+  return channels.slice(0, 3).reduce((luminance, channel, index) => {
+    const srgb = channel / 255;
+    const linear =
+      srgb <= 0.04045
+        ? srgb / 12.92
+        : Math.pow((srgb + 0.055) / 1.055, 2.4);
+    const coefficient = [0.2126, 0.7152, 0.0722][index];
+
+    return luminance + linear * coefficient;
+  }, 0);
+}
+
+function contrastRatio(foreground: string, background: string) {
+  const foregroundLuminance = relativeLuminance(foreground);
+  const backgroundLuminance = relativeLuminance(background);
+
+  return (
+    (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) /
+    (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+  );
+}
+
 async function createSubscription(
   page: Page,
   planName: string,
@@ -82,7 +111,7 @@ test("offline reconnect replays missed events and marks the list stale", async (
 });
 
 test("expired replay switches the UI into reload-required", async ({ browser }) => {
-  const context = await browser.newContext();
+  const context = await browser.newContext({ colorScheme: "dark" });
   const pageA = await context.newPage();
   const pageB = await context.newPage();
 
@@ -99,6 +128,15 @@ test("expired replay switches the UI into reload-required", async ({ browser }) 
 
   await pageB.getByRole("button", { name: /go online/i }).click();
   await expect(pageB.getByTestId("reload-required")).toBeVisible({ timeout: 7000 });
+
+  const reloadButton = pageB.getByRole("button", { name: "Reload page" });
+  const { backgroundColor, color } = await reloadButton.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+
+    return { backgroundColor: style.backgroundColor, color: style.color };
+  });
+
+  expect(contrastRatio(color, backgroundColor)).toBeGreaterThanOrEqual(4.5);
 
   await context.close();
 });

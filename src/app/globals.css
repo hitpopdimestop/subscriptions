@@ -46,6 +46,7 @@
   --danger-border: light-dark(var(--color-rose-300), var(--color-rose-700));
   --danger-content: light-dark(var(--color-rose-900), var(--color-rose-300));
   --danger-solid: light-dark(var(--color-rose-900), var(--color-rose-800));
+  --danger-solid-content: var(--color-white);
 }
 
 [data-theme="light"] {
@@ -84,6 +85,7 @@
   --color-danger-border: var(--danger-border);
   --color-danger-content: var(--danger-content);
   --color-danger-solid: var(--danger-solid);
+  --color-danger-solid-content: var(--danger-solid-content);
 }
 
 html,
