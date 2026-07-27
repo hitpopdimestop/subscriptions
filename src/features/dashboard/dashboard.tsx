@@ -20,7 +20,7 @@ export function Dashboard({
 
   return (
     <>
-      <main className="min-h-screen bg-[color:var(--background)] text-slate-950 xl:h-screen xl:overflow-hidden">
+      <main className="min-h-screen bg-canvas text-content xl:h-screen xl:overflow-hidden">
         <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8 xl:h-full xl:min-h-0">
           <DashboardHeader
             offlineMode={controller.offlineMode}

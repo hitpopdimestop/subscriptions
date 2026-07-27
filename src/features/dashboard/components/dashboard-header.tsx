@@ -17,20 +17,20 @@ export function DashboardHeader({
   onToggleOfflineMode,
 }: DashboardHeaderProps) {
   return (
-    <header className="flex flex-col gap-4 border-b border-slate-200 pb-4 lg:flex-row lg:items-center lg:justify-between">
+    <header className="flex flex-col gap-4 border-b border-border pb-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-center gap-4">
         <Image
           src="/user-avatar.png"
           alt="Demo user avatar"
           width={48}
           height={48}
-          className="h-12 w-12 rounded-full border border-slate-300 object-cover"
+          className="h-12 w-12 rounded-full border border-border object-cover"
         />
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+          <p className="text-xs font-medium uppercase tracking-[0.24em] text-content-muted">
             Subscription billing runner
           </p>
-          <h1 className="text-2xl font-semibold text-slate-950">Demo control room</h1>
+          <h1 className="text-2xl font-semibold text-content">Demo control room</h1>
         </div>
       </div>
 

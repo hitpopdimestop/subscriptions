@@ -16,6 +16,9 @@
   --border-subtle: var(--color-slate-200);
   --border-strong: var(--color-slate-400);
 
+  /* A modal scrim must dim the page in both themes, so it does not invert. */
+  --scrim: var(--color-slate-950);
+
   --warn-surface: var(--color-amber-50);
   --warn-border: var(--color-amber-400);
   --warn-content: var(--color-amber-900);
@@ -71,6 +74,8 @@
 
   --color-border: var(--border-subtle);
   --color-border-strong: var(--border-strong);
+
+  --color-scrim: var(--scrim);
 
   --color-warn-surface: var(--warn-surface);
   --color-warn-border: var(--warn-border);

@@ -170,8 +170,8 @@ describe("Dashboard", () => {
     const highlighted = screen.getByTestId("transaction-txn_001");
     const plain = screen.getByTestId("transaction-txn_002");
 
-    expect(highlighted?.className).toContain("bg-amber-50");
-    expect(plain?.className).toContain("bg-slate-50");
+    expect(highlighted?.className).toContain("bg-warn-surface");
+    expect(plain?.className).toContain("bg-surface-muted");
     expect(highlighted).toHaveTextContent("txn_001");
     expect(highlighted).not.toHaveTextContent("sub_001");
   });
