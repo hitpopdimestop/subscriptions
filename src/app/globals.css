@@ -1,17 +1,10 @@
 @import "tailwindcss";
 
 /*
- * Theming is driven entirely by `color-scheme`.
- *
- * `light dark` on :root means "follow the OS", and an explicit `data-theme`
- * narrows it to a single scheme. `light-dark()` resolves each token against
- * whichever scheme is active, so every colour is declared exactly once — there
- * is no media-query/attribute duplication that can drift apart.
- *
- * Declaring `color-scheme` also makes the browser theme its own surfaces: the
- * canvas it paints before the document renders, scrollbars, and form controls.
- * That is what keeps a reload from showing a bright background to someone whose
- * system is dark, without needing a blocking script.
+ * `color-scheme` drives theming: `light dark` follows the OS, an explicit
+ * `data-theme` narrows it, and `light-dark()` resolves each token against
+ * whichever is active — so every colour is declared once. It also themes the
+ * browser's own canvas and scrollbars, which is what avoids a flash on reload.
  */
 :root {
   color-scheme: light dark;
@@ -110,11 +103,8 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/*
- * Theme changes are intentionally instant. A CSS transition cannot animate them
- * because the tokens resolve through `light-dark()`, which follows the
- * non-animatable `color-scheme`, so the resolved colours change discretely.
- */
+/* Theme changes are instant: `light-dark()` follows the non-animatable
+ * `color-scheme`, so a transition has nothing to interpolate. */
 
 @keyframes transaction-card-surface-enter {
   from {

@@ -18,10 +18,6 @@ const ICONS: Record<ThemePreference, typeof Monitor> = {
 };
 
 export function ThemeToggle() {
-  // `useTheme` reports `system` for the hydrating render and the stored value
-  // afterwards, so server and client markup agree by construction. Nothing here
-  // needs `suppressHydrationWarning` — that would only have silenced a mismatch
-  // on the icon's own class rather than preventing one.
   const { preference, setPreference } = useTheme();
   const Icon = ICONS[preference];
 

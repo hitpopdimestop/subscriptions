@@ -20,7 +20,6 @@ test("toggling the theme updates the document and persists across reload", async
 
   const toggle = page.getByTestId("theme-toggle");
   await expect(toggle).toHaveAttribute("data-preference", "system");
-  // `system` is the absence of the attribute, not a value it can hold.
   await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.*/);
 
   await toggle.click();
@@ -44,8 +43,6 @@ test("toggling the theme updates the document and persists across reload", async
 test("the operating system preference is honoured by CSS alone", async ({
   browser,
 }) => {
-  // No stored preference and no script: the correct theme has to come from
-  // `color-scheme` plus `light-dark()` during initial parse.
   const darkContext = await browser.newContext({ colorScheme: "dark" });
   const darkPage = await darkContext.newPage();
   await darkPage.goto("/");
@@ -67,15 +64,12 @@ test("the operating system preference is honoured by CSS alone", async ({
   const lightBackground = await bodyBackground(lightPage);
   await lightContext.close();
 
-  // Same markup and same `color-scheme` in both runs, so a difference here can
-  // only come from `light-dark()` resolving against the OS setting.
   expect(darkBackground).not.toBe(lightBackground);
 });
 
 test("an explicit preference overrides the operating system setting", async ({
   browser,
 }) => {
-  // OS says dark, the user chose light: the stored preference must win.
   const context = await browser.newContext({ colorScheme: "dark" });
   await context.addInitScript(() => {
     window.localStorage.setItem("subscriptions:theme", "light");
@@ -93,8 +87,7 @@ test("an explicit preference overrides the operating system setting", async ({
 test("the page loads without console errors in every theme", async ({
   browser,
 }) => {
-  // Regression guard: hydration mismatches and script-tag warnings surface only
-  // as console errors, and are invisible to assertions on the DOM.
+  // Hydration mismatches surface only as console errors, never in the DOM.
   for (const preference of ["system", "light", "dark"] as const) {
     const context = await browser.newContext();
     await context.addInitScript((value) => {
