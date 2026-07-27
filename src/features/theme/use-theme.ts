@@ -45,8 +45,14 @@ export function useTheme() {
     }
   }, []);
 
-  // Track the OS setting while the preference is `system`.
+  // Re-assert the resolved theme after hydration: React reconciles the
+  // server-rendered `data-theme` onto <html>, discarding what the blocking
+  // inline script wrote. `suppressHydrationWarning` silences the warning but
+  // does not prevent that attribute patch, so the DOM must be corrected here.
+  // Then track the OS setting for as long as the preference is `system`.
   useEffect(() => {
+    applyPreference(preference);
+
     if (preference !== "system") {
       return;
     }
