@@ -111,31 +111,10 @@ button:disabled {
 }
 
 /*
- * Theme transitions are opt-in: `use-theme` adds this class only for the moment
- * a user switches theme, then removes it. Keeping it off by default means the
- * transition never fires while the stored preference is adopted on load, and
- * never competes with the varied transition durations used elsewhere in the UI.
+ * Theme changes are intentionally instant. A CSS transition cannot animate them
+ * because the tokens resolve through `light-dark()`, which follows the
+ * non-animatable `color-scheme`, so the resolved colours change discretely.
  */
-.theme-transition,
-.theme-transition *,
-.theme-transition *::before,
-.theme-transition *::after {
-  transition:
-    background-color 220ms ease,
-    border-color 220ms ease,
-    color 220ms ease,
-    fill 220ms ease,
-    stroke 220ms ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .theme-transition,
-  .theme-transition *,
-  .theme-transition *::before,
-  .theme-transition *::after {
-    transition: none;
-  }
-}
 
 @keyframes transaction-card-surface-enter {
   from {

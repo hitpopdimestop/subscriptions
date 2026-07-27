@@ -7,9 +7,6 @@ import {
   type ThemePreference,
 } from "./theme";
 
-const TRANSITION_CLASS = "theme-transition";
-const TRANSITION_MS = 220;
-
 const listeners = new Set<() => void>();
 
 function notify() {
@@ -59,26 +56,20 @@ function getServerSnapshot(): ThemePreference {
  * dark` on :root defer to the operating system. Light and dark pin it. No theme
  * resolution happens in JavaScript — CSS owns that.
  *
- * Every application animates, including the one that adopts a stored preference
- * on load. Keeping a single path means there is no "was this deliberate?" branch
- * to reason about, and the load-time case only occurs for the few visitors who
- * have overridden their system setting.
+ * The switch is deliberately instant. A CSS transition cannot work here because
+ * the tokens resolve through `light-dark()`, which follows the non-animatable
+ * `color-scheme`, and a view transition was not worth the failure modes it
+ * brought with it. `next-themes` disables theme transitions for similar reasons.
  */
 function applyPreference(preference: ThemePreference) {
   const root = document.documentElement;
 
-  root.classList.add(TRANSITION_CLASS);
-
   if (preference === "system") {
     root.removeAttribute("data-theme");
-  } else {
-    root.setAttribute("data-theme", preference);
+    return;
   }
 
-  window.setTimeout(
-    () => root.classList.remove(TRANSITION_CLASS),
-    TRANSITION_MS,
-  );
+  root.setAttribute("data-theme", preference);
 }
 
 export function useTheme() {
@@ -91,6 +82,8 @@ export function useTheme() {
     getServerSnapshot,
   );
 
+  // Idempotent, and the single place the DOM is touched: the first application
+  // after hydration, a click, and an update from another tab all land here.
   useEffect(() => {
     applyPreference(preference);
   }, [preference]);
