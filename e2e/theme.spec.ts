@@ -127,7 +127,9 @@ test("semantic helper text meets AA contrast on normal and inverted surfaces in 
     const page = await context.newPage();
     await page.goto("/");
 
-    const transactionHelper = page.getByText("End of history");
+    const transactionHelper = page.getByText(
+      /^(?:End of history|Scroll for older history)$/,
+    );
     const transactionPanel = page
       .locator("section")
       .filter({ has: page.getByRole("heading", { name: "Transactions" }) });
@@ -138,7 +140,7 @@ test("semantic helper text meets AA contrast on normal and inverted surfaces in 
       `transaction helper contrast in explicit ${preference} mode`,
     ).toBeGreaterThanOrEqual(4.5);
 
-    await page.getByRole("button", { name: "Pause Studio" }).click();
+    await page.getByRole("button", { name: /^Pause / }).first().click();
     const selectedDescription = page.getByText("Resume quickly after a short pause.");
     const selectedOption = page.getByRole("button", {
       name: /1 second resume quickly after a short pause/i,
