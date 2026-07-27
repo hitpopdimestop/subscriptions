@@ -111,26 +111,32 @@ Expected: PASS with contrast at or above 4.5:1.
 **Files:**
 - Modify: `src/app/globals.css`
 - Modify: `src/features/dashboard/components/pause-dialog.tsx`
+- Create: `e2e/contrast.ts`
+- Modify: `e2e/dashboard.spec.ts`
 - Modify: `e2e/theme.spec.ts`
 
 **Interfaces:**
 - Produces: accessible `text-content-subtle` for normal surfaces and `text-content-inverted-muted` for inverted surfaces.
 
-- [ ] **Step 1: Add failing real-UI contrast checks**
+- [ ] **Step 1: Share the passing WCAG helper from Task 2**
+
+Move the tested RGB parsing, relative-luminance, and contrast-ratio functions from `e2e/dashboard.spec.ts` into `e2e/contrast.ts`, export them, update the dashboard spec to import them, and rerun the existing expired-replay test to keep it green.
+
+- [ ] **Step 2: Add failing real-UI contrast checks**
 
 In both explicit light and dark modes, measure the actual transaction helper text against its panel background and a selected pause-option description against its button background. Assert each ratio is at least `4.5`.
 
-- [ ] **Step 2: Verify the checks fail**
+- [ ] **Step 3: Verify the checks fail**
 
 Run: `yarn test:e2e --grep "semantic helper text meets" --reporter=line`
 
 Expected: FAIL for the existing subtle token on at least light normal surfaces and dark inverted surfaces.
 
-- [ ] **Step 3: Split and apply the semantic roles**
+- [ ] **Step 4: Split and apply the semantic roles**
 
-Change normal `--content-subtle` to accessible light/dark palette values. Add `--content-inverted-muted`, expose its Tailwind utility, and use it for selected pause-option descriptions while leaving unselected descriptions on `text-content-muted`.
+Set normal `--content-subtle` to `light-dark(var(--color-slate-500), var(--color-slate-400))`. Add `--content-inverted-muted: light-dark(var(--color-slate-400), var(--color-slate-600))`, expose `--color-content-inverted-muted`, and use `text-content-inverted-muted` for selected pause-option descriptions while leaving unselected descriptions on `text-content-muted`.
 
-- [ ] **Step 4: Verify the contrast checks pass**
+- [ ] **Step 5: Verify the contrast checks pass**
 
 Run: `yarn test:e2e --grep "semantic helper text meets" --reporter=line`
 
