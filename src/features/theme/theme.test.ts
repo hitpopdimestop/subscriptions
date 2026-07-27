@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   nextPreference,
   parseStoredPreference,
-  resolveTheme,
   THEME_PREFERENCES,
   THEME_STORAGE_KEY,
 } from "./theme";
@@ -29,18 +28,6 @@ describe("parseStoredPreference", () => {
     expect(parseStoredPreference("DARK")).toBe("system");
     expect(parseStoredPreference("midnight")).toBe("system");
     expect(parseStoredPreference("{}")).toBe("system");
-  });
-});
-
-describe("resolveTheme", () => {
-  it("follows the system signal when preference is system", () => {
-    expect(resolveTheme("system", true)).toBe("dark");
-    expect(resolveTheme("system", false)).toBe("light");
-  });
-
-  it("lets an explicit preference override the system signal", () => {
-    expect(resolveTheme("light", true)).toBe("light");
-    expect(resolveTheme("dark", false)).toBe("dark");
   });
 });
 

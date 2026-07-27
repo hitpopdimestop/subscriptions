@@ -1,64 +1,66 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
+/*
+ * Theming is driven entirely by `color-scheme`.
+ *
+ * `light dark` on :root means "follow the OS", and an explicit `data-theme`
+ * narrows it to a single scheme. `light-dark()` resolves each token against
+ * whichever scheme is active, so every colour is declared exactly once — there
+ * is no media-query/attribute duplication that can drift apart.
+ *
+ * Declaring `color-scheme` also makes the browser theme its own surfaces: the
+ * canvas it paints before the document renders, scrollbars, and form controls.
+ * That is what keeps a reload from showing a bright background to someone whose
+ * system is dark, without needing a blocking script.
+ */
 :root {
-  --canvas: var(--color-slate-50);
-  --surface: var(--color-white);
-  --surface-muted: var(--color-slate-100);
-  --surface-inverted: var(--color-slate-950);
+  color-scheme: light dark;
 
-  --content: var(--color-slate-950);
-  --content-muted: var(--color-slate-500);
-  --content-subtle: var(--color-slate-400);
-  --content-inverted: var(--color-white);
+  --canvas: light-dark(var(--color-slate-50), var(--color-slate-950));
+  --surface: light-dark(var(--color-white), var(--color-slate-900));
+  --surface-muted: light-dark(var(--color-slate-100), var(--color-slate-800));
+  --surface-inverted: light-dark(var(--color-slate-950), var(--color-slate-100));
 
-  --border-subtle: var(--color-slate-200);
-  --border-strong: var(--color-slate-400);
+  --content: light-dark(var(--color-slate-950), var(--color-slate-100));
+  --content-muted: light-dark(var(--color-slate-500), var(--color-slate-400));
+  --content-subtle: light-dark(var(--color-slate-400), var(--color-slate-500));
+  --content-inverted: light-dark(var(--color-white), var(--color-slate-950));
+
+  --border-subtle: light-dark(var(--color-slate-200), var(--color-slate-700));
+  --border-strong: light-dark(var(--color-slate-400), var(--color-slate-600));
 
   /* A modal scrim must dim the page in both themes, so it does not invert. */
   --scrim: var(--color-slate-950);
 
-  --warn-surface: var(--color-amber-50);
-  --warn-border: var(--color-amber-400);
-  --warn-content: var(--color-amber-900);
+  --warn-surface: light-dark(var(--color-amber-50), var(--color-amber-950));
+  --warn-border: light-dark(var(--color-amber-400), var(--color-amber-600));
+  --warn-content: light-dark(var(--color-amber-900), var(--color-amber-200));
 
-  --success-surface: var(--color-emerald-100);
-  --success-border: var(--color-emerald-300);
-  --success-content: var(--color-emerald-900);
+  --success-surface: light-dark(
+    var(--color-emerald-100),
+    var(--color-emerald-950)
+  );
+  --success-border: light-dark(
+    var(--color-emerald-300),
+    var(--color-emerald-700)
+  );
+  --success-content: light-dark(
+    var(--color-emerald-900),
+    var(--color-emerald-200)
+  );
 
-  --danger-surface: var(--color-rose-50);
-  --danger-border: var(--color-rose-300);
-  --danger-content: var(--color-rose-900);
-  --danger-solid: var(--color-rose-900);
+  --danger-surface: light-dark(var(--color-rose-50), var(--color-rose-950));
+  --danger-border: light-dark(var(--color-rose-300), var(--color-rose-700));
+  --danger-content: light-dark(var(--color-rose-900), var(--color-rose-300));
+  --danger-solid: light-dark(var(--color-rose-900), var(--color-rose-800));
+}
+
+[data-theme="light"] {
+  color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --canvas: var(--color-slate-950);
-  --surface: var(--color-slate-900);
-  --surface-muted: var(--color-slate-800);
-  --surface-inverted: var(--color-slate-100);
-
-  --content: var(--color-slate-100);
-  --content-muted: var(--color-slate-400);
-  --content-subtle: var(--color-slate-500);
-  --content-inverted: var(--color-slate-950);
-
-  --border-subtle: var(--color-slate-700);
-  --border-strong: var(--color-slate-600);
-
-  --warn-surface: var(--color-amber-950);
-  --warn-border: var(--color-amber-600);
-  --warn-content: var(--color-amber-200);
-
-  --success-surface: var(--color-emerald-950);
-  --success-border: var(--color-emerald-700);
-  --success-content: var(--color-emerald-200);
-
-  --danger-surface: var(--color-rose-950);
-  --danger-border: var(--color-rose-700);
-  --danger-content: var(--color-rose-300);
-  --danger-solid: var(--color-rose-800);
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -106,6 +108,33 @@ button:not(:disabled) {
 
 button:disabled {
   cursor: not-allowed;
+}
+
+/*
+ * Theme transitions are opt-in: `use-theme` adds this class only for the moment
+ * a user switches theme, then removes it. Keeping it off by default means the
+ * transition never fires while the stored preference is adopted on load, and
+ * never competes with the varied transition durations used elsewhere in the UI.
+ */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease,
+    fill 220ms ease,
+    stroke 220ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition: none;
+  }
 }
 
 @keyframes transaction-card-surface-enter {

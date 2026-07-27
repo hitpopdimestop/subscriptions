@@ -1,7 +1,6 @@
 export const THEME_STORAGE_KEY = "subscriptions:theme";
 
 export type ThemePreference = "system" | "light" | "dark";
-export type ResolvedTheme = "light" | "dark";
 
 export const THEME_PREFERENCES: readonly ThemePreference[] = [
   "system",
@@ -11,17 +10,6 @@ export const THEME_PREFERENCES: readonly ThemePreference[] = [
 
 export function parseStoredPreference(raw: string | null): ThemePreference {
   return raw === "light" || raw === "dark" || raw === "system" ? raw : "system";
-}
-
-export function resolveTheme(
-  preference: ThemePreference,
-  systemPrefersDark: boolean,
-): ResolvedTheme {
-  if (preference === "system") {
-    return systemPrefersDark ? "dark" : "light";
-  }
-
-  return preference;
 }
 
 export function nextPreference(current: ThemePreference): ThemePreference {

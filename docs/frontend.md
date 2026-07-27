@@ -48,8 +48,11 @@ Expected UI:
 - `system` follows the operating system setting and continues tracking it live if the OS setting changes while the page is open.
 - The preference is persisted in `localStorage` under the key `subscriptions:theme`.
 - An invalid, missing, or unparseable stored value falls back to `system`.
-- The resolved theme is exposed as a `data-theme` attribute on the `<html>` element. This attribute is always concrete (`light` or `dark`) and never holds the literal value `system`.
-- The resolved theme must be applied before first paint. A blocking inline script in `<head>` reads the preference and sets `data-theme` during HTML parsing, so a reloaded page never flashes the wrong theme.
+- Theme resolution belongs to CSS, not JavaScript. `:root` declares `color-scheme: light dark`, and every token is defined once with `light-dark()`, so the operating system preference is honoured during initial parse with no script involved.
+- An explicit preference is expressed as a `data-theme` attribute on `<html>` holding `light` or `dark`, which narrows `color-scheme` to that single scheme. `system` is expressed by the **absence** of the attribute; it never holds the literal value `system`.
+- There is no blocking inline script. A visitor on the default `system` preference — the common case — receives a correctly themed page from the CSS alone, even with JavaScript disabled.
+- A visitor who has explicitly overridden their operating system setting sees their OS theme until hydration applies the stored preference. This is accepted deliberately: the intermediate state matches the browser's own canvas, scrollbars, and form controls, because `color-scheme` governs those too.
+- Every theme application animates, whether it comes from a deliberate switch, from adopting a stored preference on load, or from another tab. A transition class is added for the duration of the change and then removed, so the transition never competes with the varied durations used elsewhere in the UI. It is suppressed under `prefers-reduced-motion: reduce`.
 - Changing the theme in one tab propagates to other open tabs via the `storage` event.
 - Theme is client-only state. It is not part of the domain, is never sent over `GET /api/stream`, and never reaches the in-memory store or any server route. This is deliberate: theme is a per-browser presentation concern, unlike subscription state which is server-owned and synchronized over SSE.
 - The theme control is available in the dashboard header.

@@ -18,21 +18,24 @@ const ICONS: Record<ThemePreference, typeof Monitor> = {
 };
 
 export function ThemeToggle() {
+  // `useTheme` reports `system` for the hydrating render and the stored value
+  // afterwards, so server and client markup agree by construction. Nothing here
+  // needs `suppressHydrationWarning` — that would only have silenced a mismatch
+  // on the icon's own class rather than preventing one.
   const { preference, setPreference } = useTheme();
   const Icon = ICONS[preference];
 
   return (
     <button
       type="button"
-      className={SECONDARY_BUTTON_CLASS}
+      className={`${SECONDARY_BUTTON_CLASS} min-w-[9.5rem]`}
       onClick={() => setPreference(nextPreference(preference))}
       aria-label={`${LABELS[preference]}. Activate to change.`}
       data-testid="theme-toggle"
       data-preference={preference}
-      suppressHydrationWarning
     >
       <Icon className="h-4 w-4" aria-hidden />
-      <span suppressHydrationWarning>{LABELS[preference]}</span>
+      <span>{LABELS[preference]}</span>
     </button>
   );
 }

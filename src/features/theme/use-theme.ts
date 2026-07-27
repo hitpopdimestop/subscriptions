@@ -1,20 +1,48 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import {
   parseStoredPreference,
-  resolveTheme,
   THEME_STORAGE_KEY,
   type ThemePreference,
 } from "./theme";
 
-const DARK_QUERY = "(prefers-color-scheme: dark)";
+const TRANSITION_CLASS = "theme-transition";
+const TRANSITION_MS = 220;
 
-function readPreference(): ThemePreference {
-  if (typeof window === "undefined") {
-    return "system";
+const listeners = new Set<() => void>();
+
+function notify() {
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
+function handleStorageEvent(event: StorageEvent) {
+  // Fires only in other tabs; the acting tab is notified directly by
+  // `setPreference`. Cross-tab sync therefore needs no extra wiring.
+  if (event.key === THEME_STORAGE_KEY) {
+    notify();
+  }
+}
+
+function subscribe(onStoreChange: () => void) {
+  if (listeners.size === 0) {
+    window.addEventListener("storage", handleStorageEvent);
   }
 
+  listeners.add(onStoreChange);
+
+  return () => {
+    listeners.delete(onStoreChange);
+
+    if (listeners.size === 0) {
+      window.removeEventListener("storage", handleStorageEvent);
+    }
+  };
+}
+
+function getSnapshot(): ThemePreference {
   try {
     return parseStoredPreference(window.localStorage.getItem(THEME_STORAGE_KEY));
   } catch {
@@ -22,62 +50,60 @@ function readPreference(): ThemePreference {
   }
 }
 
+function getServerSnapshot(): ThemePreference {
+  return "system";
+}
+
+/**
+ * `system` is expressed by removing the attribute, letting `color-scheme: light
+ * dark` on :root defer to the operating system. Light and dark pin it. No theme
+ * resolution happens in JavaScript — CSS owns that.
+ *
+ * Every application animates, including the one that adopts a stored preference
+ * on load. Keeping a single path means there is no "was this deliberate?" branch
+ * to reason about, and the load-time case only occurs for the few visitors who
+ * have overridden their system setting.
+ */
 function applyPreference(preference: ThemePreference) {
-  const systemPrefersDark = window.matchMedia(DARK_QUERY).matches;
-  document.documentElement.setAttribute(
-    "data-theme",
-    resolveTheme(preference, systemPrefersDark),
+  const root = document.documentElement;
+
+  root.classList.add(TRANSITION_CLASS);
+
+  if (preference === "system") {
+    root.removeAttribute("data-theme");
+  } else {
+    root.setAttribute("data-theme", preference);
+  }
+
+  window.setTimeout(
+    () => root.classList.remove(TRANSITION_CLASS),
+    TRANSITION_MS,
   );
 }
 
 export function useTheme() {
-  const [preference, setPreferenceState] =
-    useState<ThemePreference>(readPreference);
+  // Returns `system` on the server and for the hydrating render, then re-renders
+  // with the stored value once hydration completes. That is what this hook is
+  // for, so no `mounted` flag and no state-in-effect are needed.
+  const preference = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
+
+  useEffect(() => {
+    applyPreference(preference);
+  }, [preference]);
 
   const setPreference = useCallback((next: ThemePreference) => {
-    setPreferenceState(next);
-    applyPreference(next);
-
     try {
       window.localStorage.setItem(THEME_STORAGE_KEY, next);
     } catch {
-      // Storage unavailable (private mode); the in-memory preference still applies.
-    }
-  }, []);
-
-  // Re-assert the resolved theme after hydration: React reconciles the
-  // server-rendered `data-theme` onto <html>, discarding what the blocking
-  // inline script wrote. `suppressHydrationWarning` silences the warning but
-  // does not prevent that attribute patch, so the DOM must be corrected here.
-  // Then track the OS setting for as long as the preference is `system`.
-  useEffect(() => {
-    applyPreference(preference);
-
-    if (preference !== "system") {
-      return;
+      // Storage unavailable (private mode). Nothing to read back, so the
+      // preference cannot be held; the UI stays on the last readable value.
     }
 
-    const query = window.matchMedia(DARK_QUERY);
-    const handleChange = () => applyPreference("system");
-
-    query.addEventListener("change", handleChange);
-    return () => query.removeEventListener("change", handleChange);
-  }, [preference]);
-
-  // Cross-tab sync. The `storage` event fires only in other tabs.
-  useEffect(() => {
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key !== THEME_STORAGE_KEY) {
-        return;
-      }
-
-      const next = parseStoredPreference(event.newValue);
-      setPreferenceState(next);
-      applyPreference(next);
-    };
-
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    notify();
   }, []);
 
   return { preference, setPreference };
