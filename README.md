@@ -37,6 +37,7 @@ The human role was architecture, specification, and review; the agent wrote the 
 
 - `src/app/` for the Next App Router entrypoints: the SSR dashboard page, layout, globals, and API routes.
 - `src/features/dashboard/` for the dashboard frontend feature: components, hooks, reducer/state, URL filter state, formatting, and client-side tests.
+- `src/features/theme/` for the client-side theme: preference logic, the pre-paint inline script, and the three-state toggle.
 - `src/server/subscriptions/` for the server-only billing runtime and adapters: in-memory store, GraphQL execution, SSE, cursors, HTTP helpers, and seed data.
 - `src/shared/subscriptions/` for cross-boundary contract code shared by client and server: DTO types, GraphQL documents, constants, and input rules.
 - `public/` for static assets such as the demo user avatar.
