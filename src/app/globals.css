@@ -1,7 +1,89 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 :root {
-  --background: #f6f7f8;
+  --canvas: var(--color-slate-50);
+  --surface: var(--color-white);
+  --surface-muted: var(--color-slate-100);
+  --surface-inverted: var(--color-slate-950);
+
+  --content: var(--color-slate-950);
+  --content-muted: var(--color-slate-500);
+  --content-subtle: var(--color-slate-400);
+  --content-inverted: var(--color-white);
+
+  --border-subtle: var(--color-slate-200);
+  --border-strong: var(--color-slate-400);
+
+  --warn-surface: var(--color-amber-50);
+  --warn-border: var(--color-amber-400);
+  --warn-content: var(--color-amber-900);
+
+  --success-surface: var(--color-emerald-100);
+  --success-border: var(--color-emerald-300);
+  --success-content: var(--color-emerald-900);
+
+  --danger-surface: var(--color-rose-50);
+  --danger-border: var(--color-rose-300);
+  --danger-content: var(--color-rose-900);
+  --danger-solid: var(--color-rose-900);
+}
+
+[data-theme="dark"] {
+  --canvas: var(--color-slate-950);
+  --surface: var(--color-slate-900);
+  --surface-muted: var(--color-slate-800);
+  --surface-inverted: var(--color-slate-100);
+
+  --content: var(--color-slate-100);
+  --content-muted: var(--color-slate-400);
+  --content-subtle: var(--color-slate-500);
+  --content-inverted: var(--color-slate-950);
+
+  --border-subtle: var(--color-slate-700);
+  --border-strong: var(--color-slate-600);
+
+  --warn-surface: var(--color-amber-950);
+  --warn-border: var(--color-amber-600);
+  --warn-content: var(--color-amber-200);
+
+  --success-surface: var(--color-emerald-950);
+  --success-border: var(--color-emerald-700);
+  --success-content: var(--color-emerald-200);
+
+  --danger-surface: var(--color-rose-950);
+  --danger-border: var(--color-rose-700);
+  --danger-content: var(--color-rose-300);
+  --danger-solid: var(--color-rose-800);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-inverted: var(--surface-inverted);
+
+  --color-content: var(--content);
+  --color-content-muted: var(--content-muted);
+  --color-content-subtle: var(--content-subtle);
+  --color-content-inverted: var(--content-inverted);
+
+  --color-border: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+
+  --color-warn-surface: var(--warn-surface);
+  --color-warn-border: var(--warn-border);
+  --color-warn-content: var(--warn-content);
+
+  --color-success-surface: var(--success-surface);
+  --color-success-border: var(--success-border);
+  --color-success-content: var(--success-content);
+
+  --color-danger-surface: var(--danger-surface);
+  --color-danger-border: var(--danger-border);
+  --color-danger-content: var(--danger-content);
+  --color-danger-solid: var(--danger-solid);
 }
 
 html,
@@ -23,8 +105,8 @@ button:disabled {
 
 @keyframes transaction-card-surface-enter {
   from {
-    background-color: #dcfce7;
-    border-color: #86efac;
+    background-color: var(--color-success-surface);
+    border-color: var(--color-success-border);
   }
 
   to {
