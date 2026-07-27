@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Wifi, WifiOff } from "lucide-react";
 import { SECONDARY_BUTTON_CLASS } from "../constants";
+import { ThemeToggle } from "../../theme/theme-toggle";
 import { getStreamLabel, streamTone } from "../formatters";
 import type { StreamStatus } from "../state";
 
@@ -34,6 +35,7 @@ export function DashboardHeader({
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
+        <ThemeToggle />
         <div
           className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium ${streamTone(
             streamStatus,
