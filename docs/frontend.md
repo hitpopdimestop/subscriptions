@@ -41,3 +41,15 @@ Expected UI:
 - After a successful create command in the acting tab, the client should immediately refetch the first subscription slice for the current filter and replace the local subscription list plus cursor chain.
 - This create-specific refetch is tied to the local mutation result, not to the later `subscription.created` SSE event.
 - After that refetch, if the later `subscription.created` SSE event refers to a subscription that already exists in the local list, the acting tab should not mark the list stale again.
+
+## Theme
+
+- The app supports light and dark presentation with a three-state user preference: `system`, `light`, and `dark`.
+- `system` follows the operating system setting and continues tracking it live if the OS setting changes while the page is open.
+- The preference is persisted in `localStorage` under the key `subscriptions:theme`.
+- An invalid, missing, or unparseable stored value falls back to `system`.
+- The resolved theme is exposed as a `data-theme` attribute on the `<html>` element. This attribute is always concrete (`light` or `dark`) and never holds the literal value `system`.
+- The resolved theme must be applied before first paint. A blocking inline script in `<head>` reads the preference and sets `data-theme` during HTML parsing, so a reloaded page never flashes the wrong theme.
+- Changing the theme in one tab propagates to other open tabs via the `storage` event.
+- Theme is client-only state. It is not part of the domain, is never sent over `GET /api/stream`, and never reaches the in-memory store or any server route. This is deliberate: theme is a per-browser presentation concern, unlike subscription state which is server-owned and synchronized over SSE.
+- The theme control is available in the dashboard header.
