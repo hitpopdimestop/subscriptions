@@ -8,6 +8,8 @@ import {
 } from "./theme";
 
 const listeners = new Set<() => void>();
+let sessionPreference: ThemePreference | null = null;
+let storageWriteFailed = false;
 
 function notify() {
   for (const listener of listeners) {
@@ -18,6 +20,7 @@ function notify() {
 // `storage` fires only in other tabs; the acting tab notifies itself.
 function handleStorageEvent(event: StorageEvent) {
   if (event.key === THEME_STORAGE_KEY) {
+    storageWriteFailed = false;
     notify();
   }
 }
@@ -39,10 +42,18 @@ function subscribe(onStoreChange: () => void) {
 }
 
 function getSnapshot(): ThemePreference {
+  if (storageWriteFailed) {
+    return sessionPreference ?? "system";
+  }
+
   try {
-    return parseStoredPreference(window.localStorage.getItem(THEME_STORAGE_KEY));
+    const preference = parseStoredPreference(
+      window.localStorage.getItem(THEME_STORAGE_KEY),
+    );
+    sessionPreference = preference;
+    return preference;
   } catch {
-    return "system";
+    return sessionPreference ?? "system";
   }
 }
 
@@ -76,10 +87,13 @@ export function useTheme() {
   }, [preference]);
 
   const setPreference = useCallback((next: ThemePreference) => {
+    sessionPreference = next;
+
     try {
       window.localStorage.setItem(THEME_STORAGE_KEY, next);
+      storageWriteFailed = false;
     } catch {
-      // Storage unavailable; the preference just will not persist.
+      storageWriteFailed = true;
     }
 
     notify();
