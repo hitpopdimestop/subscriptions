@@ -24,4 +24,29 @@ describe("useTheme", () => {
       expect(document.documentElement).toHaveAttribute("data-theme", "dark"),
     );
   });
+
+  it("applies a cross-tab preference when storage reads fail", async () => {
+    const { result } = renderHook(() => useTheme());
+
+    act(() => result.current.setPreference("system"));
+    expect(result.current.preference).toBe("system");
+
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("storage unavailable");
+    });
+
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key: "subscriptions:theme",
+          newValue: "dark",
+        }),
+      );
+    });
+
+    expect(result.current.preference).toBe("dark");
+    await waitFor(() =>
+      expect(document.documentElement).toHaveAttribute("data-theme", "dark"),
+    );
+  });
 });

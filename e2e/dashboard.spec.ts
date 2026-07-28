@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import { contrastRatio } from "./contrast";
+import { renderedColors } from "./contrast";
+import { contrastRatio } from "../test-utils/contrast";
 
 async function createSubscription(
   page: Page,
@@ -102,11 +103,10 @@ test("expired replay switches the UI into reload-required", async ({ browser }) 
   await expect(pageB.getByTestId("reload-required")).toBeVisible({ timeout: 7000 });
 
   const reloadButton = pageB.getByRole("button", { name: "Reload page" });
-  const { backgroundColor, color } = await reloadButton.evaluate((element) => {
-    const style = window.getComputedStyle(element);
-
-    return { backgroundColor: style.backgroundColor, color: style.color };
-  });
+  const { backgroundColor, color } = await renderedColors(
+    reloadButton,
+    reloadButton,
+  );
 
   expect(contrastRatio(color, backgroundColor)).toBeGreaterThanOrEqual(4.5);
 

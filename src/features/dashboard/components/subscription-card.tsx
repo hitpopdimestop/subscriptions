@@ -71,7 +71,7 @@ export function SubscriptionCard({
 
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-content-muted">
               <span className="truncate font-mono">{subscription.id}</span>
-              <span className="h-1 w-1 rounded-full bg-content-subtle" />
+              <span className="h-1 w-1 rounded-full bg-content-muted" />
               <span>{subscription.billingIntervalMs} ms cadence</span>
             </div>
           </div>

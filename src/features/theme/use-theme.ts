@@ -20,6 +20,7 @@ function notify() {
 // `storage` fires only in other tabs; the acting tab notifies itself.
 function handleStorageEvent(event: StorageEvent) {
   if (event.key === THEME_STORAGE_KEY) {
+    sessionPreference = parseStoredPreference(event.newValue);
     storageWriteFailed = false;
     notify();
   }

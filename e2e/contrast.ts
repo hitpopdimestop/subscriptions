@@ -1,28 +1,34 @@
-export function relativeLuminance(color: string) {
-  const channels = color.match(/\d+(?:\.\d+)?/g)?.map(Number);
+import type { Locator } from "@playwright/test";
 
-  if (!channels || channels.length < 3) {
-    throw new Error(`Expected an rgb color, received ${color}`);
+export async function renderedColors(
+  foreground: Locator,
+  background: Locator,
+) {
+  const backgroundElement = await background.elementHandle();
+
+  if (!backgroundElement) {
+    throw new Error("Expected a visible contrast background.");
   }
 
-  return channels.slice(0, 3).reduce((luminance, channel, index) => {
-    const srgb = channel / 255;
-    const linear =
-      srgb <= 0.04045
-        ? srgb / 12.92
-        : Math.pow((srgb + 0.055) / 1.055, 2.4);
-    const coefficient = [0.2126, 0.7152, 0.0722][index];
+  return foreground.evaluate((element, backgroundNode) => {
+    const context = document.createElement("canvas").getContext("2d");
 
-    return luminance + linear * coefficient;
-  }, 0);
-}
+    if (!context) {
+      throw new Error("Expected a canvas context for color normalization.");
+    }
 
-export function contrastRatio(foreground: string, background: string) {
-  const foregroundLuminance = relativeLuminance(foreground);
-  const backgroundLuminance = relativeLuminance(background);
+    const toRgb = (color: string) => {
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
 
-  return (
-    (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) /
-    (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
-  );
+      return `rgb(${red}, ${green}, ${blue})`;
+    };
+
+    return {
+      backgroundColor: toRgb(getComputedStyle(backgroundNode).backgroundColor),
+      color: toRgb(getComputedStyle(element).color),
+    };
+  }, backgroundElement);
 }

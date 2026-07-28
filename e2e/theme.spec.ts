@@ -1,5 +1,6 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
-import { contrastRatio } from "./contrast";
+import { expect, test, type Page } from "@playwright/test";
+import { renderedColors } from "./contrast";
+import { contrastRatio } from "../test-utils/contrast";
 
 function bodyBackground(page: Page) {
   return page.evaluate(() => getComputedStyle(document.body).backgroundColor);
@@ -9,36 +10,6 @@ function colorScheme(page: Page) {
   return page.evaluate(
     () => getComputedStyle(document.documentElement).colorScheme,
   );
-}
-
-async function renderedColors(foreground: Locator, background: Locator) {
-  const backgroundElement = await background.elementHandle();
-
-  if (!backgroundElement) {
-    throw new Error("Expected a visible contrast background.");
-  }
-
-  return foreground.evaluate((element, backgroundNode) => {
-    const context = document.createElement("canvas").getContext("2d");
-
-    if (!context) {
-      throw new Error("Expected a canvas context for color normalization.");
-    }
-
-    const toRgb = (color: string) => {
-      context.clearRect(0, 0, 1, 1);
-      context.fillStyle = color;
-      context.fillRect(0, 0, 1, 1);
-      const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
-
-      return `rgb(${red}, ${green}, ${blue})`;
-    };
-
-    return {
-      backgroundColor: toRgb(getComputedStyle(backgroundNode).backgroundColor),
-      color: toRgb(getComputedStyle(element).color),
-    };
-  }, backgroundElement);
 }
 
 test("toggling the theme updates the document and persists across reload", async ({

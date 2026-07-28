@@ -65,11 +65,11 @@ export function TransactionsPanel({
         {loadingMore ? (
           <LoaderCircle className="h-4 w-4 animate-spin text-content-muted" />
         ) : nextCursor ? (
-          <span className="text-xs uppercase tracking-[0.18em] text-content-subtle">
+          <span className="text-xs uppercase tracking-[0.18em] text-content-muted">
             Scroll for older history
           </span>
         ) : (
-          <span className="text-xs uppercase tracking-[0.18em] text-content-subtle">
+          <span className="text-xs uppercase tracking-[0.18em] text-content-muted">
             End of history
           </span>
         )}
