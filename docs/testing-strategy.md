@@ -91,6 +91,8 @@ Cover:
 - replay-expired UI state
 - offline toggle disconnect and reconnect behavior
 - theme preference parsing, including the fallback to `system` for missing or unparseable stored values
+- theme preference held for the session when `localStorage` writes fail, so the control still works where storage is unavailable
+- a theme change from another tab applied even when `localStorage` reads fail
 
 ## End-to-End Coverage
 
@@ -106,6 +108,7 @@ Minimum useful scenarios:
 6. replay can no longer continue and the UI requires refresh
 7. a theme choice persists across reload and propagates to another tab
 8. the page loads with no console errors under each theme preference, since hydration mismatches surface only there and are invisible to assertions on the DOM
+9. semantic helper text meets WCAG AA contrast in both explicit themes, on normal and inverted surfaces alike
 
 ## Practical Guidance
 
@@ -113,3 +116,5 @@ Minimum useful scenarios:
 - Drive recurring billing through a testable scheduler step rather than real intervals in most tests.
 - Keep domain assertions separate from transport assertions.
 - Treat TDD as contract-first work: stabilize domain behavior and API shape before building the interactive frontend on top of it.
+- Normalize colors to sRGB before measuring contrast. `getComputedStyle` returns `lab()` or `oklch()` in current browsers, so painting the value to a canvas and reading it back is what makes a ratio meaningful; the contrast helper rejects anything that is not `rgb()` rather than parsing digits out of it and returning a confident wrong answer.
+- Keep test tooling split by dependency: pure helpers live in `test-utils/` with vitest coverage, and Playwright-specific helpers stay in `e2e/`. `*.test.ts` is vitest, `*.spec.ts` is Playwright, so a pure assertion never drags in a production build.
