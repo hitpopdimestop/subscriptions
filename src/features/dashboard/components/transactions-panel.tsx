@@ -31,11 +31,11 @@ export function TransactionsPanel({
 }: TransactionsPanelProps) {
   return (
     <section
-      className={`flex ${SECTION_HEIGHT_CLASS} flex-col gap-4 rounded-md border border-slate-200 bg-white p-4`}
+      className={`flex ${SECTION_HEIGHT_CLASS} flex-col gap-4 rounded-md border border-border bg-surface p-4`}
     >
       <div>
-        <h2 className="text-lg font-semibold text-slate-950">Transactions</h2>
-        <p className="text-sm text-slate-600">
+        <h2 className="text-lg font-semibold text-content">Transactions</h2>
+        <p className="text-sm text-content-muted">
           Initial feed comes from SSR. Older history loads on scroll.
         </p>
       </div>
@@ -63,13 +63,13 @@ export function TransactionsPanel({
 
       <div className="flex h-8 items-center justify-center">
         {loadingMore ? (
-          <LoaderCircle className="h-4 w-4 animate-spin text-slate-500" />
+          <LoaderCircle className="h-4 w-4 animate-spin text-content-muted" />
         ) : nextCursor ? (
-          <span className="text-xs uppercase tracking-[0.18em] text-slate-400">
+          <span className="text-xs uppercase tracking-[0.18em] text-content-muted">
             Scroll for older history
           </span>
         ) : (
-          <span className="text-xs uppercase tracking-[0.18em] text-slate-400">
+          <span className="text-xs uppercase tracking-[0.18em] text-content-muted">
             End of history
           </span>
         )}

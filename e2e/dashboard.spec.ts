@@ -1,4 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
+import { renderedColors } from "./contrast";
+import { contrastRatio } from "../test-utils/contrast";
 
 async function createSubscription(
   page: Page,
@@ -82,7 +84,7 @@ test("offline reconnect replays missed events and marks the list stale", async (
 });
 
 test("expired replay switches the UI into reload-required", async ({ browser }) => {
-  const context = await browser.newContext();
+  const context = await browser.newContext({ colorScheme: "dark" });
   const pageA = await context.newPage();
   const pageB = await context.newPage();
 
@@ -99,6 +101,14 @@ test("expired replay switches the UI into reload-required", async ({ browser }) 
 
   await pageB.getByRole("button", { name: /go online/i }).click();
   await expect(pageB.getByTestId("reload-required")).toBeVisible({ timeout: 7000 });
+
+  const reloadButton = pageB.getByRole("button", { name: "Reload page" });
+  const { backgroundColor, color } = await renderedColors(
+    reloadButton,
+    reloadButton,
+  );
+
+  expect(contrastRatio(color, backgroundColor)).toBeGreaterThanOrEqual(4.5);
 
   await context.close();
 });

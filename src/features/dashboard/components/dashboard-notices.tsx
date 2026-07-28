@@ -22,7 +22,7 @@ export function DashboardNotices({
       {streamStatus === "reload-required" ? (
         <section
           data-testid="reload-required"
-          className="flex items-center justify-between gap-4 rounded-md border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-900"
+          className="flex items-center justify-between gap-4 rounded-md border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger-content"
         >
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-4 w-4" />
@@ -30,7 +30,7 @@ export function DashboardNotices({
           </div>
           <button
             type="button"
-            className="rounded-md bg-rose-900 px-3 py-2 text-sm font-medium text-white"
+            className="rounded-md bg-danger-solid px-3 py-2 text-sm font-medium text-danger-solid-content"
             onClick={onReloadPage}
           >
             Reload page
@@ -41,7 +41,7 @@ export function DashboardNotices({
       {isSubscriptionListStale ? (
         <section
           data-testid="stale-subscriptions-toast"
-          className="flex items-center justify-between gap-4 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+          className="flex items-center justify-between gap-4 rounded-md border border-warn-border bg-warn-surface px-4 py-3 text-sm text-warn-content"
         >
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-4 w-4" />
@@ -49,7 +49,7 @@ export function DashboardNotices({
           </div>
           <button
             type="button"
-            className={`${SECONDARY_BUTTON_CLASS} border-amber-400 text-amber-950 hover:bg-amber-100`}
+            className={`${SECONDARY_BUTTON_CLASS} border-warn-border text-warn-content hover:bg-warn-surface`}
             onClick={onRefreshStaleList}
           >
             <RefreshCcw className="h-4 w-4" />
@@ -59,7 +59,7 @@ export function DashboardNotices({
       ) : null}
 
       {errorMessage ? (
-        <section className="rounded-md border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-900">
+        <section className="rounded-md border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger-content">
           {errorMessage}
         </section>
       ) : null}

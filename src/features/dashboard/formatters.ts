@@ -41,26 +41,26 @@ export function getStreamLabel(status: StreamStatus) {
 export function statusTone(status: Subscription["status"]) {
   switch (status) {
     case "active":
-      return "bg-emerald-100 text-emerald-900";
+      return "bg-success-surface text-success-content";
     case "paused":
-      return "bg-amber-100 text-amber-900";
+      return "bg-warn-surface text-warn-content";
     case "canceled":
-      return "bg-rose-100 text-rose-900";
+      return "bg-danger-surface text-danger-content";
     default:
-      return "bg-slate-100 text-slate-900";
+      return "bg-surface-muted text-content";
   }
 }
 
 export function streamTone(status: StreamStatus) {
   switch (status) {
     case "live":
-      return "bg-emerald-100 text-emerald-900";
+      return "bg-success-surface text-success-content";
     case "offline":
-      return "bg-slate-200 text-slate-900";
+      return "bg-surface-muted text-content";
     case "reload-required":
-      return "bg-rose-100 text-rose-900";
+      return "bg-danger-surface text-danger-content";
     case "connecting":
     default:
-      return "bg-amber-100 text-amber-900";
+      return "bg-warn-surface text-warn-content";
   }
 }

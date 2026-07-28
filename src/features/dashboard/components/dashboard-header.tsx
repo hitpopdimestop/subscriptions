@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Wifi, WifiOff } from "lucide-react";
 import { SECONDARY_BUTTON_CLASS } from "../constants";
+import { ThemeToggle } from "../../theme/theme-toggle";
 import { getStreamLabel, streamTone } from "../formatters";
 import type { StreamStatus } from "../state";
 
@@ -16,24 +17,25 @@ export function DashboardHeader({
   onToggleOfflineMode,
 }: DashboardHeaderProps) {
   return (
-    <header className="flex flex-col gap-4 border-b border-slate-200 pb-4 lg:flex-row lg:items-center lg:justify-between">
+    <header className="flex flex-col gap-4 border-b border-border pb-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-center gap-4">
         <Image
           src="/user-avatar.png"
           alt="Demo user avatar"
           width={48}
           height={48}
-          className="h-12 w-12 rounded-full border border-slate-300 object-cover"
+          className="h-12 w-12 rounded-full border border-border object-cover"
         />
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+          <p className="text-xs font-medium uppercase tracking-[0.24em] text-content-muted">
             Subscription billing runner
           </p>
-          <h1 className="text-2xl font-semibold text-slate-950">Demo control room</h1>
+          <h1 className="text-2xl font-semibold text-content">Demo control room</h1>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
+        <ThemeToggle />
         <div
           className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium ${streamTone(
             streamStatus,

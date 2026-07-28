@@ -15,8 +15,12 @@ export function TransactionCard({
   transaction,
 }: TransactionCardProps) {
   const surfaceStyle = {
-    "--transaction-card-bg": highlighted ? "#fffbeb" : "#f8fafc",
-    "--transaction-card-border": highlighted ? "#fbbf24" : "#e2e8f0",
+    "--transaction-card-bg": highlighted
+      ? "var(--color-warn-surface)"
+      : "var(--color-surface-muted)",
+    "--transaction-card-border": highlighted
+      ? "var(--color-warn-border)"
+      : "var(--color-border)",
   } as CSSProperties;
 
   return (
@@ -24,7 +28,7 @@ export function TransactionCard({
       data-testid={`transaction-${transaction.id}`}
       style={surfaceStyle}
       className={`${TRANSACTION_CARD_HEIGHT_CLASS} rounded-md border px-3 py-3 transition ${
-        highlighted ? "border-amber-400 bg-amber-50" : "border-slate-200 bg-slate-50"
+        highlighted ? "border-warn-border bg-warn-surface" : "border-border bg-surface-muted"
       } ${entering ? "transaction-card-surface-enter" : ""}`}
     >
       <div
@@ -33,14 +37,14 @@ export function TransactionCard({
         }`}
       >
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-slate-950">{transaction.planName}</p>
-          <p className="truncate font-mono text-xs text-slate-500">{transaction.id}</p>
+          <p className="truncate text-sm font-semibold text-content">{transaction.planName}</p>
+          <p className="truncate font-mono text-xs text-content-muted">{transaction.id}</p>
         </div>
         <div className="text-right">
-          <p className="text-sm font-semibold text-slate-950">
+          <p className="text-sm font-semibold text-content">
             {formatAmount(transaction.amountCents, transaction.currency)}
           </p>
-          <p className="text-xs text-slate-500">{formatTimestamp(transaction.createdAt)}</p>
+          <p className="text-xs text-content-muted">{formatTimestamp(transaction.createdAt)}</p>
         </div>
       </div>
     </article>

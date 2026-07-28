@@ -5,7 +5,11 @@ export default defineConfig({
     environment: "node",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    include: [
+      "src/**/*.test.ts",
+      "src/**/*.test.tsx",
+      "test-utils/**/*.test.ts",
+    ],
     exclude: ["e2e/**"],
   },
 });

@@ -27,27 +27,27 @@ export function CreateSubscriptionForm({
 }: CreateSubscriptionFormProps) {
   return (
     <form
-      className="grid gap-4 rounded-md border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(140px,0.65fr)_minmax(140px,0.7fr)_auto]"
+      className="grid gap-4 rounded-md border border-border bg-surface-muted p-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(140px,0.65fr)_minmax(140px,0.7fr)_auto]"
       onSubmit={onSubmit}
     >
       <div className="lg:col-span-full">
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-content-muted">
           New demo subscriptions are charged immediately and then join the fixed billing
           cadence.
         </p>
       </div>
 
-      <label className="flex flex-col gap-1 text-sm text-slate-700">
+      <label className="flex flex-col gap-1 text-sm text-content-muted">
         <span>Plan</span>
         <input
           value={planName}
           onChange={(event) => onPlanNameChange(event.target.value)}
-          className="h-10 rounded-md border border-slate-300 bg-white px-3 outline-none transition focus:border-slate-950"
+          className="h-10 rounded-md border border-border bg-surface px-3 outline-none transition focus:border-border-strong"
           placeholder="Growth"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-slate-700">
+      <label className="flex flex-col gap-1 text-sm text-content-muted">
         <span>Amount (USD cents)</span>
         <input
           type="number"
@@ -55,11 +55,11 @@ export function CreateSubscriptionForm({
           step={1}
           value={amountCents}
           onChange={(event) => onAmountCentsChange(event.target.value)}
-          className="h-10 rounded-md border border-slate-300 bg-white px-3 outline-none transition focus:border-slate-950"
+          className="h-10 rounded-md border border-border bg-surface px-3 outline-none transition focus:border-border-strong"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-slate-700">
+      <label className="flex flex-col gap-1 text-sm text-content-muted">
         <span>Interval (ms)</span>
         <input
           type="number"
@@ -68,7 +68,7 @@ export function CreateSubscriptionForm({
           step={100}
           value={billingIntervalMs}
           onChange={(event) => onBillingIntervalMsChange(event.target.value)}
-          className="h-10 rounded-md border border-slate-300 bg-white px-3 outline-none transition focus:border-slate-950"
+          className="h-10 rounded-md border border-border bg-surface px-3 outline-none transition focus:border-border-strong"
         />
       </label>
 

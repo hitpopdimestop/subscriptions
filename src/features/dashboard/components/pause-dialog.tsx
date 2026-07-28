@@ -56,20 +56,20 @@ export function PauseDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/45 px-4"
       onClick={onClose}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="pause-dialog-title"
-        className="w-full max-w-lg rounded-md border border-slate-200 bg-white p-5 shadow-xl"
+        className="w-full max-w-lg rounded-md border border-border bg-surface p-5 shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-slate-500">Pause subscription</p>
-            <h3 id="pause-dialog-title" className="text-xl font-semibold text-slate-950">
+            <p className="text-sm font-medium text-content-muted">Pause subscription</p>
+            <h3 id="pause-dialog-title" className="text-xl font-semibold text-content">
               {subscription.planName}
             </h3>
           </div>
@@ -84,7 +84,7 @@ export function PauseDialog({
           </button>
         </div>
 
-        <p className="mt-3 text-sm text-slate-600">
+        <p className="mt-3 text-sm text-content-muted">
           Pausing shifts the billing schedule forward by the time this subscription stays
           paused.
         </p>
@@ -104,15 +104,15 @@ export function PauseDialog({
                 type="button"
                 className={`rounded-md border px-4 py-3 text-left transition ${
                   selected
-                    ? "border-slate-950 bg-slate-950 text-white"
-                    : "border-slate-300 bg-white text-slate-950 hover:border-slate-400 hover:bg-slate-50"
+                    ? "border-surface-inverted bg-surface-inverted text-content-inverted"
+                    : "border-border bg-surface text-content hover:border-border-strong hover:bg-surface-muted"
                 }`}
                 onClick={() => onPausePresetChange(value)}
               >
                 <span className="block text-sm font-semibold">{label}</span>
                 <span
                   className={`mt-1 block text-xs ${
-                    selected ? "text-slate-200" : "text-slate-500"
+                    selected ? "text-content-inverted-muted" : "text-content-muted"
                   }`}
                 >
                   {description}
@@ -124,8 +124,8 @@ export function PauseDialog({
           <div
             className={`rounded-md border px-4 py-3 transition sm:col-span-2 ${
               pausePreset === "custom"
-                ? "border-slate-950 bg-slate-950 text-white"
-                : "border-slate-300 bg-white text-slate-950"
+                ? "border-surface-inverted bg-surface-inverted text-content-inverted"
+                : "border-border bg-surface text-content"
             }`}
           >
             <button
@@ -136,7 +136,9 @@ export function PauseDialog({
               <span className="block text-sm font-semibold">Custom seconds</span>
               <span
                 className={`mt-1 block text-xs ${
-                  pausePreset === "custom" ? "text-slate-200" : "text-slate-500"
+                  pausePreset === "custom"
+                    ? "text-content-inverted-muted"
+                    : "text-content-muted"
                 }`}
               >
                 Choose any positive number of seconds.
@@ -150,11 +152,7 @@ export function PauseDialog({
               value={customSeconds}
               onFocus={() => onPausePresetChange("custom")}
               onChange={(event) => onCustomSecondsChange(event.target.value)}
-              className={`mt-3 h-10 w-full rounded-md border px-3 outline-none transition ${
-                pausePreset === "custom"
-                  ? "border-slate-200 bg-white text-slate-950 focus:border-slate-300"
-                  : "border-slate-300 bg-white text-slate-950 focus:border-slate-950"
-              }`}
+              className="mt-3 h-10 w-full rounded-md border border-border bg-surface px-3 text-content outline-none transition focus:border-border-strong"
               placeholder="10"
             />
           </div>

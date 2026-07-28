@@ -17,12 +17,12 @@ export const TRANSACTION_PANEL_TEST_ID = "transactions-scroll-panel";
 export const TRANSACTION_ENTRY_ANIMATION_MS = 720;
 
 export const PRIMARY_BUTTON_CLASS =
-  "inline-flex items-center justify-center gap-2 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-md bg-surface-inverted px-4 py-2 text-sm font-medium text-content-inverted transition hover:opacity-90 disabled:opacity-60";
 export const SECONDARY_BUTTON_CLASS =
-  "inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-950 transition hover:border-slate-400 hover:bg-slate-100 disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-sm font-medium text-content transition hover:border-border-strong hover:bg-surface-muted disabled:opacity-60";
 export const ICON_BUTTON_CLASS =
-  "inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-300 text-slate-700 transition hover:border-slate-400 hover:bg-slate-100 disabled:opacity-60";
+  "inline-flex h-10 w-10 items-center justify-center rounded-md border border-border text-content-muted transition hover:border-border-strong hover:bg-surface-muted disabled:opacity-60";
 export const DANGER_ICON_BUTTON_CLASS =
-  "inline-flex h-10 w-10 items-center justify-center rounded-md border border-rose-300 text-rose-700 transition hover:bg-rose-50 disabled:opacity-60";
+  "inline-flex h-10 w-10 items-center justify-center rounded-md border border-danger-border text-danger-content transition hover:bg-danger-surface disabled:opacity-60";
 
 export const VIRTUALIZED_LIST_NEAR_END_THRESHOLD_PX = 400;

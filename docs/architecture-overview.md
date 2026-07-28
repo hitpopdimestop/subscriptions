@@ -140,6 +140,7 @@ Keep the codebase split by runtime ownership:
 
 - `src/app/`: Next App Router entrypoints, including `src/app/page.tsx` and the HTTP route handlers under `src/app/api/`
 - `src/features/dashboard/`: dashboard-specific client code such as components, hooks, reducer/state, virtualization, and URL state handling
+- `src/features/theme/`: client-only theme preference — parsing, `localStorage` persistence, cross-tab sync, and the toggle. It sits outside the dashboard's client-state layers because it is presentation state rather than server-derived data, and it never reaches the store or any route. Resolving light versus dark belongs to CSS; see `docs/frontend.md`
 - `src/server/subscriptions/`: server-only billing runtime, in-memory store, GraphQL execution, SSE, cursor helpers, and seed data
 - `src/shared/subscriptions/`: cross-boundary contract code that is safe to share between client and server, such as types, constants, GraphQL documents, and input rules
 - `public/`: static assets used by the UI

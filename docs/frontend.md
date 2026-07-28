@@ -41,3 +41,18 @@ Expected UI:
 - After a successful create command in the acting tab, the client should immediately refetch the first subscription slice for the current filter and replace the local subscription list plus cursor chain.
 - This create-specific refetch is tied to the local mutation result, not to the later `subscription.created` SSE event.
 - After that refetch, if the later `subscription.created` SSE event refers to a subscription that already exists in the local list, the acting tab should not mark the list stale again.
+
+## Theme
+
+- The app supports light and dark presentation with a three-state user preference: `system`, `light`, and `dark`.
+- `system` follows the operating system setting and continues tracking it live if the OS setting changes while the page is open.
+- The preference is persisted in `localStorage` under the key `subscriptions:theme`.
+- An invalid, missing, or unparseable stored value falls back to `system`.
+- Theme resolution belongs to CSS, not JavaScript. `:root` declares `color-scheme: light dark`, and every token is defined once with `light-dark()`, so the operating system preference is honoured during initial parse with no script involved.
+- An explicit preference is expressed as a `data-theme` attribute on `<html>` holding `light` or `dark`, which narrows `color-scheme` to that single scheme. `system` is expressed by the **absence** of the attribute; it never holds the literal value `system`.
+- There is no blocking inline script. A visitor on the default `system` preference — the common case — receives a correctly themed page from the CSS alone, even with JavaScript disabled.
+- A visitor who has explicitly overridden their operating system setting sees their OS theme until hydration applies the stored preference. This is accepted deliberately: the intermediate state matches the browser's own canvas, scrollbars, and form controls, because `color-scheme` governs those too.
+- Theme changes are applied instantly and are not animated, whether they come from a deliberate switch, from adopting a stored preference on load, or from another tab. Because the tokens resolve through `light-dark()`, which follows the non-animatable `color-scheme`, a CSS transition has nothing to interpolate; a view transition was tried and removed as not worth its failure modes.
+- Changing the theme in one tab propagates to other open tabs via the `storage` event.
+- Theme is per-browser client state and must not travel through the domain event stream. Cross-tab sync uses the `storage` event, not `GET /api/stream`. This matters because the in-memory store is a single process-wide singleton with one global listener set — an event broadcast from it reaches every connected visitor, so routing theme through it would let one visitor change everyone's theme.
+- The theme control is available in the dashboard header.
